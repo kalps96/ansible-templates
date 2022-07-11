@@ -1,0 +1,42 @@
+- name: update n2 server
+  hosts: n2
+  remote_user: root
+  become: yes
+
+  tasks:
+  - name: latest version
+    ansible.builtin.yum:
+      name: httpd
+      state: latest
+  - name: install java 
+    ansible.builtin.yum:
+     name: java
+     state: latest
+  - name: install wget
+    ansible.builtin.yum:
+     name: wget
+     state: present
+  - name: create directory
+    file:
+      path: /home/centos/jenkins-conf
+      state: directory
+
+  - name: install sonarqube
+    get_url:  
+      url: https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-6.7.7.zip
+      dest: /home/centos/jenkins-conf
+  - name: install unzip
+    ansible.builtin.yum:
+      name: unzip
+      state: latest
+  - name: unzip sonar 
+    unarchive:
+      src: "/home/centos/jenkins-conf/sonarqube-6.7.7.zip"
+      dest: /home/centos/jenkins-conf
+      remote_src: yes
+  - name: install sonatype nexus
+    get_url: 
+      url: https://download.sonatype.com/nexus/oss/nexus-2.14.18-01-bundle.tar.gz 
+      dest: /home/centos/jenkins-conf
+ 
+
